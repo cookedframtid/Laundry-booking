@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mounts the local 'database' folder to the container's app/data folder 
+      # so your SQLite file persists on your host machine
+      - ./database:/app/data
+    environment:
+      - DATABASE_URL=/app/data/app.db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
