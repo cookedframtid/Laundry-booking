@@ -3,7 +3,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 // 1. Connect to SQLite database file locally
-const dbPath = path.join(__dirname, 'app.db');
+const dbPath = path.join(__dirname, '../database/app.db');  
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) console.error('SQLite connection error:', err.message);
   else console.log(`Connected to SQLite database at ${dbPath}`);
