@@ -29,9 +29,9 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Express + SQLite running' });
 });
 
-// Skapa tabeller om de inte finns
+// Skapa tabeller 
 db.serialize(() => {
-    // Tabell för användare (valfritt, men bra om ni ska ha inloggning)
+    // Tabell för användare 
     db.run(`
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
