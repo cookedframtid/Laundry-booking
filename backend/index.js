@@ -29,30 +29,7 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Express + SQLite running' });
 });
 
-// Skapa tabeller 
-db.serialize(() => {
-    // Tabell för användare 
-    db.run(`
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE,
-            password TEXT
-        )
-    `);
 
-    // Tabell för bokningar
-    db.run(`
-        CREATE TABLE IF NOT EXISTS bookings (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            date TEXT,
-            time_slot TEXT,
-            room_id INTEGER
-        )
-    `);
-    
-    console.log("Databasens tabeller är redo!");
-});
 
 // 3. Starta servern
 app.listen(PORT, () => {
