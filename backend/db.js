@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const db = new Database(path.join(__dirname, "app.db"));
+db.pragma("foreign_keys = ON");
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -15,8 +16,8 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS laundry_Rooms (
     room_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    Building_id INTEGER NOT NULL,
-    room_name TEXT NOT NULL
+    building_id INTEGER NOT NULL,
+    room_name TEXT NOT NULL,
     unique(building_id, room_name)
   );
 
