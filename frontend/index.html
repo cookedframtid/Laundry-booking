@@ -3,9 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Loundry Booking</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    
+    <div id="app-conatainer">
+        <!-- Login screen -->
+         <section id="login-section">
+            <h2>Log in</h2>
+            <form id="login-form">
+                <input type="text" id="apartment" placeholder="Apartment Number" required>
+                <input type="password" id="password" placeholder="password" required>
+                <button type="submit">Log in</button>
+            </form>
+            <p id="login-message" style="color: red;"></p>
+         </section>
+
+         <!--Application (hidden until logged in)-->
+         <section id="main-section" style="display: none;">
+            <h2>Loundry Bookings</h2>
+            <button id="logout btn"> Log out</button>
+
+            <div id="controls">
+                <!--filter and search section...-->
+            </div>
+
+            <div id="bookings-list">
+                <!--Booking section (loads with JS)-->
+            </div>
+         </section>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
