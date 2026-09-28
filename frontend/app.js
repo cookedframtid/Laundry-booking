@@ -1,3 +1,13 @@
+import Database from 'better-sqlite3';
+const db = new Database('app.db');
+export default db;
+import db from './db.js';
+const 
+
+
+
+
+
 function apartmentNumberLimit(apartmentNumber) {
     const apartmentnumber = document.getElementById(apartmentNumber).value;
     var regex = /^[0-9]{4,8}$/;
@@ -6,6 +16,7 @@ function apartmentNumberLimit(apartmentNumber) {
     }
    return true;
 }
+
 
 
 document.getElementById("login-form").addEventListener("submit", function (e) {
@@ -20,5 +31,6 @@ document.getElementById("login-form").addEventListener("submit", function (e) {
         messageEl.textContent = "";
         // TODO: continue with actual login logic here (check password, call backend, etc.)
         console.log("Apartment number is valid!");
+        window.location.href = "bookings.html";
     }
 });
