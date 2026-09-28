@@ -9,6 +9,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static('frontend'));
 
 // helper function to hash passwords
 function hashPassword(password) {
@@ -48,21 +49,47 @@ const requireAdmin = (req, res, next) => {
 
 
 // ==========================================
-// 2. ROUTES: AUTENTISERING (Registrera/Logga in)
+// 2. ROUTES: Authenticate (Log-in)
 // ==========================================
 
-app.post('/api/register', (req, res) => {
+// Only admins can create new user accounts
+app.post('/api/register', requireAuth, requireAdmin, (req, res) => {
     const { apartment_number, password, role } = req.body;
-    const userRole = role === 'admin' ? 'admin' : 'resident'; // Default is resident
+    const userRole = role === 'admin' ? 'admin' : 'resident';
 
     try {
         const stmt = db.prepare("INSERT INTO users (apartment_number, password_hash, role) VALUES (?, ?, ?)");
         stmt.run(apartment_number, hashPassword(password), userRole);
-        res.json({ message: "User created successfully!" });
+        res.json({ message: "Resident account created successfully!" });
     } catch (error) {
         res.status(400).json({ error: "The apartment number is already registered." });
     }
 });
+
+// Allow logged-in users to change their own password
+app.put('/api/users/change-password', requireAuth, (req, res) => {
+    const { current_password, new_password } = req.body;
+    const apartment_number = req.user.apartment_number; 
+
+    // 1. Verify the current password is correct
+    const stmt = db.prepare("SELECT * FROM users WHERE apartment_number = ? AND password_hash = ?");
+    const user = stmt.get(apartment_number, hashPassword(current_password));
+
+    if (!user) {
+        return res.status(401).json({ error: "Incorrect current password." });
+    }
+
+    // 2. Hash and save the new password
+    try {
+        db.prepare("UPDATE users SET password_hash = ? WHERE apartment_number = ?")
+          .run(hashPassword(new_password), apartment_number);
+          
+        res.json({ message: "Password updated successfully!" });
+    } catch (error) {
+        res.status(500).json({ error: "Could not update password." });
+    }
+});
+
 
 app.post('/api/login', (req, res) => {
     const { apartment_number, password } = req.body;
