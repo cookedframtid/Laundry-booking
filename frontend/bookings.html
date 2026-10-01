@@ -2,24 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>  Available Bookings </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Bookings</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Available Bookings</h1>
-   <select id="room-select"></select>
 
-<div id="calendar-header">
-    <button id="prev-month">◀</button>
-    <h2 id="month-title"></h2>
-    <button id="next-month">▶</button>
-</div>
-<div id="calendar-grid"></div>
-<div id="day-details"></div>
+    <select id="room-select"></select>
 
-<script src="bookings.js"></script>
-</table>
-    <button id="Cancel booking"> Cancel Booking</button>
-    <button id="Change booking"> Edit Booking</button>
-    <button id="My bookings"> My Bookings</button>
+    <div id="calendar-header">
+        <button id="prev-month">◀</button>
+        <h2 id="month-title"></h2>
+        <button id="next-month">▶</button>
+    </div>
+
+    <div id="calendar-grid"></div>
+    <div id="day-details"></div>
+
+    <button id="cancel-booking">Cancel Booking</button>
+    <button id="change-booking">Edit Booking</button>
+    <button id="my-bookings">My Bookings</button>
+
+    <script src="bookings.js"></script>
 </body>
 </html>
