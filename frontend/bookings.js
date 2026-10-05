@@ -81,4 +81,6 @@ function renderGrid(bookings) {
     });
 }
 
+
+
 fetchBookings();

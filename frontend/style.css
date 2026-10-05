@@ -7,12 +7,80 @@ CSS
 }
 body {
   font-family: Arial, sans-serif;
+    background-color: #f4f4f9; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
 /* =========================================
    2. LOGIN SECTION
 ========================================= */
-#login-section { .... }
+
+#login-section {
+    background-color: white;
+    padding: 40px 30px;
+    border-radius: 20px; /* round edges */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* shadow */
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+#login-section h2 {
+    margin-top: 0;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+/* Stack the form elements vertically */
+#login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between inputs */
+}
+
+/* round edge inputs */
+#login-form input {
+    padding: 15px 20px;
+    border: 1px solid #dcdcdc;
+    border-radius: 30px; 
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+#login-form input:focus {
+    border-color: #8e2de2; /* input outline color  */
+}
+
+
+#login-form button {
+    padding: 15px 20px;
+    border: none;
+    border-radius: 30px;
+    background-color: #5e2ca5; /* login button color */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(94, 44, 165, 0.4); /* Matching solid shadow */
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+#login-form button:hover {
+    background-color: #4a1f87; /* button hover color */
+    transform: translateY(-2px);
+}
+
+#login-message {
+    margin-top: 15px;
+    font-size: 14px;
+}
 
 /* =========================================
    3. DASHBOARD & CONTROLS
