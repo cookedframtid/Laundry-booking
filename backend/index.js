@@ -3,8 +3,16 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import crypto from "crypto";
 import db from "./db.js";
+import cors from "cors";    
+
+
 
 const app = express();
+
+app.use(cors({
+    origin: ["http://127.0.0.1:5500", "http://localhost:5500"], // Adjust this to your frontend's URL
+    credentials: true // Allow cookies to be sent
+}));
 
 // Middleware
 app.use(express.json());
