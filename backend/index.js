@@ -17,8 +17,7 @@ app.use(cors({
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static('frontend'));
-
+app.use(express.static('../frontend'));
 // helper function to hash passwords
 function hashPassword(password) {
     return crypto.createHash('sha256').update(password).digest('hex');
