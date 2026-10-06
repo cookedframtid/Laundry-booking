@@ -37,6 +37,10 @@ for (const room of initialRooms) {
     insertRoom.run(room.building_id, room.room_name);
 }
 
+for (const user of initialUsers) {
+    insertUser.run(user.apartment, hashPassword(user.password), user.role);
+}
+
 console.log("Database seeded successfully!");
 console.log("\n--- Accounts Available for Testing ---");
 initialUsers.forEach(u => {

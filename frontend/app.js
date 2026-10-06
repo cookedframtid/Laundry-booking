@@ -1,7 +1,9 @@
+/**
 import Database from 'better-sqlite3';
 const db = new Database('app.db');
 export default db;
 import db from './db.js';
+**/
 
 
 
@@ -19,11 +21,9 @@ function apartmentNumberLimit(apartmentNumber) {
 
 
 
-document.getElementById("login-form").addEventListener("submit", function (e) {
 document.getElementById("login-form").addEventListener("submit", async function (e) {
     e.preventDefault(); // stops the page from reloading
 
-    const result = apartmentNumberLimit("apartment"); // "apartment" is the id of your input field
 
     // 1. Grab both inputs
     const apartmentnumber = document.getElementById("apartment").value;
@@ -32,13 +32,10 @@ document.getElementById("login-form").addEventListener("submit", async function 
     // 2. Validate apartment number
     const result = apartmentNumberLimit("apartment"); 
     const messageEl = document.getElementById("login-message");
+
     if (result !== true) {
         messageEl.textContent = result;
     } else {
-        messageEl.textContent = "";
-        // TODO: continue with actual login logic here (check password, call backend, etc.)
-        console.log("Apartment number is valid!");
-        window.location.href = "bookings.html";
         messageEl.textContent = "Logging in...";
         messageEl.style.color = "black";
 
@@ -58,9 +55,10 @@ document.getElementById("login-form").addEventListener("submit", async function 
             if (response.ok) {
                 messageEl.textContent = "Success! Loading schedule...";
                 messageEl.style.color = "green";
-                
-                // We will handle the UI switch here next
-                console.log("Logged in as:", data.role);
+
+                //Navigate to calendar after successufl login.
+                window.location.href = "/bookings.html";
+
                 
             } else {
                 // Display the specific error from the backend
