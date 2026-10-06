@@ -1,5 +1,5 @@
 // ===== Configuration =====
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
 const SLOTS = [
     { label: '08:00-12:00', start: '08:00', end: '12:00' },
     { label: '12:00-16:00', start: '12:00', end: '16:00' },
@@ -32,22 +32,36 @@ function toDateString(date) {
     return `${year}-${month}-${day}`;
 }
 
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+
 function getWeekDates(monday) {
-    return DAYS.map(function (dayName, offset) {
+    const result = []; // empty array to collect the 7 days
+
+    for (let offset = 0; offset < DAYS.length; offset++) {
         const date = new Date(monday);
         date.setDate(monday.getDate() + offset);
-        return { name: dayName, dateString: toDateString(date) };
-    });
+
+        result.push({ name: DAYS[offset], dateString: toDateString(date) });
+    }
+
+    return result;
 }
 
 // ===== Matching bookings to slots =====
 
+
 function findBooking(bookings, dateString, slotStart) {
-    return bookings.find(function (booking) {
-        const bookingDate = booking.start_time.slice(0, 10);
-        const bookingTime = booking.start_time.slice(11, 16);
-        return bookingDate === dateString && bookingTime === slotStart;
-    });
+    try {
+        return bookings.find(function (booking) {
+            const bookingDate = booking.start_time.slice(0, 10);
+            const bookingTime = booking.start_time.slice(11, 16);
+            return bookingDate === dateString && bookingTime === slotStart;
+        });
+    } catch (error) {
+        console.error("Error finding booking:", error);
+        return null;
+    }
 }
 
 function getCellStatus(booking) {
