@@ -6,10 +6,9 @@
     <title>Available Bookings</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <h1>Available Bookings</h1>
-
-    <select id="room-select"></select>
 
     <div id="calendar-header">
         <button id="prev-month">◀</button>
@@ -34,6 +33,14 @@
         <button id="change-booking">Edit Booking</button>
         <button id="my-bookings">My Bookings</button>
     </div>
+    <div id="confirm-overlay" class="hidden">
+    <div id="confirm-box">
+        <p id="confirm-text"></p>
+        <button id="confirm-yes">Confirm Booking</button>
+        <button id="confirm-no">Cancel</button>
+    </div>
+    
+
 </div>
 
     <script src="bookings.js"></script>

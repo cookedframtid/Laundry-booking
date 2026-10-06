@@ -93,7 +93,7 @@ body {
    4. BOOKING CALENDAR (bookings.html)
 ========================================= */
 #calendar-grid table {
-    width: 100%;
+    width: 80%;
     border-collapse: collapse;
 }
 
@@ -168,3 +168,7 @@ body {
 .hidden {
     display: none;
 }
+.hidden {
+    display: none !important;
+}
+
