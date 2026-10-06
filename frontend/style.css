@@ -92,6 +92,13 @@ body {
  /* =========================================
    4. BOOKING CALENDAR (bookings.html)
 ========================================= */
+
+#bookingsection{
+     margin-top: 0;
+    margin-bottom: 30px;
+    color: #333;
+}
+
 #calendar-grid table {
     width: 80%;
     border-collapse: collapse;
