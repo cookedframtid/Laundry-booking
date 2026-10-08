@@ -21,7 +21,16 @@
             <div class="menu-container">
                 <button id="menu-toggle">Menu</button>
                 <div id="menu-dropdown" class="hidden dropdown">
-                    <a href="#">My Bookings</a>
+                    <a href="#" id="my-bookings-link">My Bookings</a>
+                    <div id="mybookings-overlay" class="hidden overlay">
+                        <div class="modal modal-wide">
+                             <h3>My Bookings</h3>
+                             <div id="mybookings-list"></div>
+                              <div class="modal-actions">
+                                 <button id="mybookings-close" class="btn-cancel">Close</button>
+                             </div>
+                              </div>
+                    </div>
                     <a href="#">Settings</a>
                     <a href="#">Logout</a>
                 </div>

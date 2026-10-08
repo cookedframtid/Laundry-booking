@@ -73,6 +73,18 @@ app.post('/api/register', requireAuth, requireAdmin, (req, res) => {
     }
 });
 
+app.get('/api/bookings/mine', requireAuth, (req, res) => {
+    const bookings = db.prepare(`
+        SELECT b.booking_id, b.room_id, r.room_name, b.start_time, b.end_time
+        FROM bookings b
+        JOIN laundry_Rooms r ON b.room_id = r.room_id
+        WHERE b.apartment_number = ?
+        ORDER BY b.start_time ASC
+    `).all(req.user.apartment_number);
+
+    res.json(bookings);
+});
+
 // Allow logged-in users to change their own password
 app.put('/api/users/change-password', requireAuth, (req, res) => {
     const { current_password, new_password } = req.body;
