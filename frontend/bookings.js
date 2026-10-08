@@ -1,9 +1,4 @@
 // ===== Configuration =====
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 const SLOTS = [
     { label: '08:00-12:00', start: '08:00', end: '12:00' },
     { label: '12:00-16:00', start: '12:00', end: '16:00' },
@@ -15,11 +10,6 @@ let currentMonday = getMonday(new Date());
 
 
 // ===== Date helpers =====
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 function getMonday(date) {
     const result = new Date(date);
     const dayIndex = (result.getDay() + 6) % 7;
@@ -47,24 +37,7 @@ function toDateString(date) {
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-<<<<<<< HEAD
 
-
-
-function getWeekDates(monday) {
-    const result = []; // empty array to collect the 7 days
-
-
-    for (let offset = 0; offset < DAYS.length; offset++) {
-        const date = new Date(monday);
-        date.setDate(monday.getDate() + offset);
-
-
-        result.push({ name: DAYS[offset], dateString: toDateString(date) });
-    }
-
-
-=======
 function getWeekDates(monday) {
     const result = [];
     for (let offset = 0; offset < DAYS.length; offset++) {
@@ -72,19 +45,11 @@ function getWeekDates(monday) {
         date.setDate(monday.getDate() + offset);
         result.push({ name: DAYS[offset], dateString: toDateString(date) });
     }
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
     return result;
 }
 
 
 // ===== Matching bookings to slots =====
-<<<<<<< HEAD
-
-
-
-
-=======
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 function findBooking(bookings, dateString, slotStart) {
     try {
         return bookings.find(function (booking) {
@@ -111,11 +76,6 @@ function getCellStatus(booking) {
 
 
 // ===== Building the HTML =====
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 function buildHeaderRow(weekDates) {
     const headerRow = document.getElementById("header-row");
     headerRow.innerHTML = "<th>Time</th>";
@@ -181,11 +141,6 @@ function renderGrid(bookings) {
 
 
 // ===== Dropdown menu =====
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 const menuToggle = document.getElementById("menu-toggle");
 const menuDropdown = document.getElementById("menu-dropdown");
 
@@ -204,11 +159,6 @@ document.addEventListener("click", function (e) {
 
 
 // ===== Booking confirmation popup =====
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 let pendingBooking = null;
 
 
@@ -227,11 +177,6 @@ function closeBookingConfirm() {
 
 
 document.getElementById("confirm-no").addEventListener("click", closeBookingConfirm);
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 document.getElementById("confirm-yes").addEventListener("click", function () {
     if (!pendingBooking) return;
     bookSlot(pendingBooking.dateString, pendingBooking.slot.start, pendingBooking.slot.end);
@@ -273,25 +218,14 @@ async function bookSlot(dateString, startTime, endTime) {
 
 
 // ===== Loading data =====
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 async function fetchBookings() {
     const res = await fetch('http://localhost:5000/api/bookings', { credentials: "include" });
     const bookings = await res.json();
     renderGrid(bookings);
 }
 
-<<<<<<< HEAD
 
 // ===== Week Navigation Logic =====
-
-
-=======
-// ===== Week Navigation Logic =====
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 // Calculate ISO week number
 function getWeekNumber(d) {
     const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -301,38 +235,20 @@ function getWeekNumber(d) {
     return Math.ceil((((date - yearStart) / 86400000) + 1)/7);
 }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 function updateWeekDisplay() {
     const weekNum = getWeekNumber(currentMonday);
     document.getElementById("week-display").textContent = `Week ${weekNum}`;
 }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 // Event Listeners for Left/Right Arrows
 document.getElementById("prev-week").addEventListener("click", () => {
     currentMonday.setDate(currentMonday.getDate() - 7);
     updateWeekDisplay();
-<<<<<<< HEAD
-    fetchBookings(); // Re-fetch or re-render based on new dates
-});
-
-
-document.getElementById("next-week").addEventListener("click", () => {
-    currentMonday.setDate(currentMonday.getDate() + 7);
-    updateWeekDisplay();
-    fetchBookings(); // Re-fetch or re-render based on new dates
-});
-
-
-=======
     fetchBookings();
 });
+
 
 document.getElementById("next-week").addEventListener("click", () => {
     currentMonday.setDate(currentMonday.getDate() + 7);
@@ -340,7 +256,7 @@ document.getElementById("next-week").addEventListener("click", () => {
     fetchBookings();
 });
 
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
+
 // Update the renderGrid function to ensure the week display is updated on load
 const originalRenderGrid = renderGrid;
 renderGrid = function(bookings) {
@@ -348,9 +264,7 @@ renderGrid = function(bookings) {
     originalRenderGrid(bookings);
 };
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 00d257e08ccf922ffbfe94cb10d1b0cecfb930e8
 // ===== Start =====
 fetchBookings();
+
