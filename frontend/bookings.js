@@ -267,6 +267,51 @@ async function fetchBookings() {
     renderGrid(bookings);
 }
 
+
+
+
+
+// ===== My bookings popup =====
+const myBookingsDialog = document.getElementById("mybookings-dialog");
+
+async function loadMyBookings() {
+    const res = await fetch('http://localhost:5000/api/bookings/mine', { credentials: "include" });
+    const bookings = await res.json();
+
+    const list = document.getElementById("mybookings-list");
+    list.innerHTML = "";
+
+    if (bookings.length === 0) {
+        list.textContent = "You have no bookings.";
+    }
+
+    bookings.forEach(function (booking) {
+        const item = document.createElement("li");
+        item.textContent = `${booking.room_name}: ${booking.start_time.replace("T", " ")} - ${booking.end_time.slice(11, 16)} `;
+
+        const cancelButton = document.createElement("button");
+        cancelButton.textContent = "Cancel";
+        cancelButton.addEventListener("click", async function () {
+            await cancelBooking(booking.booking_id); // also refreshes the calendar
+            loadMyBookings();                        // refresh this list
+        });
+
+        item.appendChild(cancelButton);
+        list.appendChild(item);
+    });
+}
+
+document.getElementById("my-bookings-link").addEventListener("click", async function (e) {
+    e.preventDefault();
+    menuDropdown.classList.add("hidden");
+    await loadMyBookings();
+    if (!myBookingsDialog.open) myBookingsDialog.showModal();
+});
+
+document.getElementById("mybookings-close").addEventListener("click", function () {
+    myBookingsDialog.close();
+});
+
 document.getElementById("room-select").addEventListener("change", fetchBookings);
 
 // ===== Start =====

@@ -22,20 +22,12 @@
                 <button id="menu-toggle">Menu</button>
                 <div id="menu-dropdown" class="hidden dropdown">
                     <a href="#" id="my-bookings-link">My Bookings</a>
-                    <div id="mybookings-overlay" class="hidden overlay">
-                        <div class="modal modal-wide">
-                             <h3>My Bookings</h3>
-                             <div id="mybookings-list"></div>
-                              <div class="modal-actions">
-                                 <button id="mybookings-close" class="btn-cancel">Close</button>
-                             </div>
-                              </div>
-                    </div>
                     <a href="#">Settings</a>
                     <a href="#">Logout</a>
                 </div>
             </div>
         </div>
+    <script src="bookings.js"></script>
     </header>
 
 
@@ -49,7 +41,7 @@
                 <button id="next-week" class="nav-btn">&rsaquo;</button>
             </div>
         </div>
-
+        
 
         <table class="schedule-table">
             <thead>
@@ -77,12 +69,16 @@
     </div>
 
 
-    <!-- Set a mock apartment number so getCellStatus works properly -->
-    <script>
-        window.myApartment = "101"; // Change this to dynamically load the logged-in user's apartment
-    </script>
-    <script src="bookings.js"></script>
 
+      <!-- My Bookings popup -->
+    <dialog id="mybookings-dialog">
+        <h3>My Bookings</h3>
+        <ul id="mybookings-list"></ul>
+        <button id="mybookings-close">Close</button>
+    </dialog>
+
+    
+    <script src="bookings.js"></script>
 
 </body>
 </html>
