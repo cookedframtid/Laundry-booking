@@ -3,54 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Available Bookings</title>
+    <title>Booking Calendar</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<section id="bookingssection">
+    <!-- Header / Controls (Now positioned at top right) -->
+    <header class="top-bar">
+        <div class="controls">
+            <select id="room-select">
+                <option value="1">Laundry Room 1</option>
+                <option value="2">Laundry Room 2</option>
+            </select>
 
-    <h1>Available Bookings</h1>
+            <div class="menu-container">
+                <button id="menu-toggle">Menu</button>
+                <div id="menu-dropdown" class="hidden dropdown">
+                    <a href="#">My Bookings</a>
+                    <a href="#">Settings</a>
+                    <a href="#">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <div id="calendar-header">
-        <button id="prev-month">◀</button>
-        <h2 id="month-title"></h2>
-        <button id="next-month">▶</button>
+    <!-- Calendar Container -->
+    <main class="calendar-container">
+        <!-- Week Navigation -->
+        <div class="calendar-header">
+            <div class="week-nav">
+                <button id="prev-week" class="nav-btn">&lsaquo;</button>
+                <h2 id="week-display">Week --</h2>
+                <button id="next-week" class="nav-btn">&rsaquo;</button>
+            </div>
+        </div>
+
+        <table class="schedule-table">
+            <thead>
+                <tr id="header-row">
+                    <!-- JS will populate th elements here -->
+                </tr>
+            </thead>
+            <tbody id="schedule-body">
+                <!-- JS will populate tr and td elements here -->
+            </tbody>
+        </table>
+    </main>
+
+    <!-- Booking Confirmation Modal -->
+    <div id="confirm-overlay" class="hidden overlay">
+        <div class="modal">
+            <h3>Confirm Booking</h3>
+            <p id="confirm-text"></p>
+            <div class="modal-actions">
+                <button id="confirm-no" class="btn-cancel">Cancel</button>
+                <button id="confirm-yes" class="btn-confirm">Confirm</button>
+            </div>
+        </div>
     </div>
 
-    
-   <div id="calendar-grid">
-    <table>
-        <thead>
-            <tr id="header-row"></tr>
-        </thead>
-        <tbody id="schedule-body"></tbody>
-    </table>
-    </div>
-        
- </section>
-
-
-    <div id="day-details"></div>
-
-    <div id="menu-container">
-    <button id="menu-toggle">⋮</button>
-    <div id="menu-dropdown" class="hidden">
-        <button id="cancel-booking">Cancel Booking</button>
-        <button id="change-booking">Edit Booking</button>
-        <button id="my-bookings">My Bookings</button>
-    </div>
-    <div id="confirm-overlay" class="hidden">
-    <div id="confirm-box">
-        <p id="confirm-text"></p>
-        <button id="confirm-yes">Confirm Booking</button>
-        <button id="confirm-no">Cancel</button>
-    </div>
-    
-
-</div>
-
+    <!-- Set a mock apartment number so getCellStatus works properly -->
+    <script>
+        window.myApartment = "101"; // Change this to dynamically load the logged-in user's apartment
+    </script>
     <script src="bookings.js"></script>
+
 </body>
 </html>
