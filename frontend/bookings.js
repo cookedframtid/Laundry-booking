@@ -268,8 +268,23 @@ async function fetchBookings() {
 }
 
 
-
-
+// make it so that the log out button logs the user out and redirects to the login page
+document.getElementById("Logout").addEventListener("click", async function () {
+    try {
+        const res = await fetch('http://localhost:5000/api/logout', {
+            method: "POST",
+            credentials: "include"
+        });
+        if (res.ok) {
+            window.location.href = "index.html";
+        }
+        else {
+            alert("Logout failed. Please try again.");
+        }
+    } catch (err) {
+        alert("Could not reach the server.");
+    }
+});
 
 // ===== My bookings popup =====
 const myBookingsDialog = document.getElementById("mybookings-dialog");
