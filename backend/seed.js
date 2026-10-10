@@ -9,11 +9,11 @@ console.log("Seeding database with initial data...");
 
 // 1. Prepare initial users (apartment numbers and temporary passwords)
 const initialUsers = [
-    { apartment: "0000", password: "Admin1234", role: "admin" },
-    { apartment: "1001", password: "Welcome1001!", role: "resident" },
-    { apartment: "1002", password: "Welcome1002!", role: "resident" },
-    { apartment: "1003", password: "Welcome1003!", role: "resident" },
-    { apartment: "1101", password: "Welcome1101!", role: "resident" },
+    { apartment: "0000", password: "password", role: "admin" },
+    { apartment: "1001", password: "password", role: "resident" },
+    { apartment: "1002", password: "password", role: "resident" },
+    { apartment: "1003", password: "password", role: "resident" },
+    { apartment: "1004", password: "password", role: "resident" },
 ];
 
 const insertUser = db.prepare(`
