@@ -66,19 +66,19 @@ function getCellStatus(booking, past) {
 
     if (booking && past) {
         return mine
-            ? { text: "You · Past", className: "status-past-booked" }
-            : { text: "Booked · Past", className: "status-past-booked" };
+            ? { text: "My booking", className: "status-past-booked" }
+            : { text: "Unavailable", className: "status-past-booked" };
     }
     if (past) {
-        return { text: "Past", className: "status-past" };
+        return { text: "Book", className: "status-past" };
     }
     if (!booking) {
-        return { text: "Available", className: "status-ready" };
+        return { text: "Book", className: "status-ready" };
     }
     if (mine) {
-        return { text: "You", className: "status-mine" };
+        return { text: "My booking", className: "status-mine" };
     }
-    return { text: "Booked", className: "status-unavailable" };
+    return { text: "Unavailable", className: "status-unavailable" };
 }
 
 // ===== Building the HTML =====
@@ -94,12 +94,12 @@ function buildHeaderRow(weekDates) {
 }
 
 function addCellClickBehavior(cell, status, booking, day, slot) {
-    if (status.text === "Available") {
+    if (status.text === "Book") {
         cell.style.cursor = "pointer";
         cell.addEventListener("click", function () {
             openBookingConfirm(day.dateString, slot);
         });
-    } else if (status.text === "You") {
+    } else if (status.text === "My booking") {
         cell.style.cursor = "pointer";
         cell.addEventListener("click", function () {
             if (confirm(`Cancel your booking for ${slot.label} on ${day.dateString}?`)) {

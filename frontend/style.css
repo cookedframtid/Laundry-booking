@@ -389,3 +389,55 @@ select, button {
     color: #6b7280;
     cursor: not-allowed;
 }
+
+/*Book*/
+.status-ready {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #334155; 
+    cursor: pointer;
+}
+
+.status-ready:hover {
+    background-color: #f1f5f9;
+    transform: scale(0.98);
+}
+
+/*My Booking*/
+.status-mine {
+    background-color: #1d4ed8; 
+    color: #ffffff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/*Unavailabe*/
+.status-unavailable {
+    background-color: #d97757; 
+    color: #ffffff;
+    cursor: not-allowed;
+}
+
+/*slots in the past*/
+.status-past {
+    background-color: #f4f5f7;
+    color: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+.status-past-booked {
+    background-color: #d1d5db;
+    color: #6b7280;
+    cursor: not-allowed;
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+.schedule-table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: separate;
+    border-spacing: 12px;
+    table-layout: fixed; /* This forces all columns to be the exact same width */
+}
