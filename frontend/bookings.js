@@ -170,6 +170,7 @@ document.getElementById("next-week").addEventListener("click", function () {
     fetchBookings();
 });
 
+
 // ===== Dropdown menu =====
 const menuToggle = document.getElementById("menu-toggle");
 const menuDropdown = document.getElementById("menu-dropdown");
@@ -184,6 +185,30 @@ document.addEventListener("click", function (e) {
         menuDropdown.classList.add("hidden");
     }
 });
+ 
+// make a secret button that only admins can see that gives a popup that lets them control the rooms and bookings
+async function loadCurrentUser() {
+    try {
+        const res = await fetch('http://localhost:5000/api/me', { credentials: "include" });
+
+        if (!res.ok) {
+            window.location.href = "index.html";
+            return false;               // ← tell the caller we're not logged in
+        }
+
+        const user = await res.json();
+        window.myApartment = String(user.apartment_number);
+
+        if (user.role === "admin") {
+            document.getElementById("admin-link").classList.remove("hidden");
+        }
+        return true;
+    } catch (err) {
+        alert("Could not reach the server.");
+        return false;
+    }
+}
+
 
 // ===== Booking confirmation popup =====
 let pendingBooking = null;
@@ -268,6 +293,7 @@ async function fetchBookings() {
 }
 
 
+
 // make it so that the log out button logs the user out and redirects to the login page
 document.getElementById("Logout").addEventListener("click", async function () {
     try {
@@ -330,4 +356,5 @@ document.getElementById("mybookings-close").addEventListener("click", function (
 document.getElementById("room-select").addEventListener("change", fetchBookings);
 
 // ===== Start =====
-fetchBookings();
+ loadCurrentUser().then(fetchBookings);
+

@@ -150,6 +150,13 @@ app.get('/api/rooms', (req, res) => {
     res.json(rooms);
 });
 
+app.get('/api/me', requireAuth, (req, res) => {
+    res.json({
+        apartment_number: req.user.apartment_number,
+        role: req.user.role
+    });
+});
+
 app.post('/api/rooms', requireAuth, requireAdmin, (req, res) => {
     const { building_id, room_name } = req.body;
     try {
