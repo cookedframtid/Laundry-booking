@@ -5,8 +5,6 @@ import crypto from "crypto";
 import db from "./db.js";
 import cors from "cors";    
 
-
-
 const app = express();
 
 app.use(cors({
@@ -18,6 +16,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static('../frontend'));
+
 // helper function to hash passwords
 function hashPassword(password) {
     return crypto.createHash('sha256').update(password).digest('hex');
@@ -33,7 +32,7 @@ const requireAuth = (req, res, next) => {
     if (!token) return res.status(401).json({ error: "You must be logged in." });
 
     const stmt = db.prepare(`
-        SELECT u.apartment_number, u.role 
+        SELECT u.apartment_number, u.role, u.building_id 
         FROM sessions s
         JOIN users u ON s.apartment_number = u.apartment_number
         WHERE s.token = ? AND s.expires_at > ?
@@ -42,7 +41,7 @@ const requireAuth = (req, res, next) => {
 
     if (!user) return res.status(401).json({ error: "Invalid or expired session." });
 
-    req.user = user; // Save the user in the request so other routes can see who made the call
+    req.user = user; 
     next();
 };
 
@@ -54,61 +53,9 @@ const requireAdmin = (req, res, next) => {
     next();
 };
 
-
 // ==========================================
-// 2. ROUTES: Authenticate (Log-in)
+// 2. ROUTES: Users & Auth
 // ==========================================
-
-// Only admins can create new user accounts
-app.post('/api/register', requireAuth, requireAdmin, (req, res) => {
-    const { apartment_number, password, role } = req.body;
-    const userRole = role === 'admin' ? 'admin' : 'resident';
-
-    try {
-        const stmt = db.prepare("INSERT INTO users (apartment_number, password_hash, role) VALUES (?, ?, ?)");
-        stmt.run(apartment_number, hashPassword(password), userRole);
-        res.json({ message: "Resident account created successfully!" });
-    } catch (error) {
-        res.status(400).json({ error: "The apartment number is already registered." });
-    }
-});
-
-app.get('/api/bookings/mine', requireAuth, (req, res) => {
-    const bookings = db.prepare(`
-        SELECT b.booking_id, b.room_id, r.room_name, b.start_time, b.end_time
-        FROM bookings b
-        JOIN laundry_Rooms r ON b.room_id = r.room_id
-        WHERE b.apartment_number = ?
-        ORDER BY b.start_time ASC
-    `).all(req.user.apartment_number);
-
-    res.json(bookings);
-});
-
-// Allow logged-in users to change their own password
-app.put('/api/users/change-password', requireAuth, (req, res) => {
-    const { current_password, new_password } = req.body;
-    const apartment_number = req.user.apartment_number; 
-
-    // 1. Verify the current password is correct
-    const stmt = db.prepare("SELECT * FROM users WHERE apartment_number = ? AND password_hash = ?");
-    const user = stmt.get(apartment_number, hashPassword(current_password));
-
-    if (!user) {
-        return res.status(401).json({ error: "Incorrect current password." });
-    }
-
-    // 2. Hash and save the new password
-    try {
-        db.prepare("UPDATE users SET password_hash = ? WHERE apartment_number = ?")
-          .run(hashPassword(new_password), apartment_number);
-          
-        res.json({ message: "Password updated successfully!" });
-    } catch (error) {
-        res.status(500).json({ error: "Could not update password." });
-    }
-});
-
 
 app.post('/api/login', (req, res) => {
     const { apartment_number, password } = req.body;
@@ -140,21 +87,64 @@ app.post('/api/logout', (req, res) => {
     res.json({ message: "Logged out successfully!" });
 });
 
-
-// ==========================================
-// 3. 3. ROUTES: LAUNDRY ROOMS (Only admin can create/delete)
-// ==========================================
-
-app.get('/api/rooms', (req, res) => {
-    const rooms = db.prepare("SELECT * FROM laundry_Rooms").all();
-    res.json(rooms);
-});
-
 app.get('/api/me', requireAuth, (req, res) => {
     res.json({
         apartment_number: req.user.apartment_number,
         role: req.user.role
     });
+});
+
+// Only admins can create new user accounts
+app.post('/api/register', requireAuth, requireAdmin, (req, res) => {
+    const { apartment_number, password, role, building_id } = req.body;
+    const userRole = role === 'admin' ? 'admin' : 'resident';
+
+    try {
+        const stmt = db.prepare("INSERT INTO users (apartment_number, password_hash, role, building_id) VALUES (?, ?, ?, ?)");
+        stmt.run(apartment_number, hashPassword(password), userRole, building_id || 1);
+        res.json({ message: "Resident account created successfully!" });
+    } catch (error) {
+        res.status(400).json({ error: "The apartment number is already registered." });
+    }
+});
+
+// Allow logged-in users to change their own password
+app.put('/api/users/change-password', requireAuth, (req, res) => {
+    const { current_password, new_password } = req.body;
+    const apartment_number = req.user.apartment_number; 
+
+    const stmt = db.prepare("SELECT * FROM users WHERE apartment_number = ? AND password_hash = ?");
+    const user = stmt.get(apartment_number, hashPassword(current_password));
+
+    if (!user) {
+        return res.status(401).json({ error: "Incorrect current password." });
+    }
+
+    try {
+        db.prepare("UPDATE users SET password_hash = ? WHERE apartment_number = ?")
+          .run(hashPassword(new_password), apartment_number);
+          
+        res.json({ message: "Password updated successfully!" });
+    } catch (error) {
+        res.status(500).json({ error: "Could not update password." });
+    }
+});
+
+
+// ==========================================
+// 3. ROUTES: LAUNDRY ROOMS
+// ==========================================
+
+app.get('/api/rooms', requireAuth, (req, res) => {
+    if (req.user.role === 'admin') {
+        // Admins can see and manage all rooms in all buildings
+        const rooms = db.prepare("SELECT * FROM laundry_Rooms").all();
+        res.json(rooms);
+    } else {
+        // Residents only see rooms matching their building_id
+        const rooms = db.prepare("SELECT * FROM laundry_Rooms WHERE building_id = ?").all(req.user.building_id);
+        res.json(rooms);
+    }
 });
 
 app.post('/api/rooms', requireAuth, requireAdmin, (req, res) => {
@@ -175,7 +165,7 @@ app.delete('/api/rooms/:id', requireAuth, requireAdmin, (req, res) => {
 
 
 // ==========================================
-// 4. ROUTES: BOOKINGS (Search, Create, Update, Delete)
+// 4. ROUTES: BOOKINGS
 // ==========================================
 
 // Search, Filter and Sort bookings
@@ -206,6 +196,18 @@ app.get('/api/bookings/search', (req, res) => {
 
 app.get('/api/bookings', (req, res) => {
     const bookings = db.prepare("SELECT * FROM bookings").all();
+    res.json(bookings);
+});
+
+app.get('/api/bookings/mine', requireAuth, (req, res) => {
+    const bookings = db.prepare(`
+        SELECT b.booking_id, b.room_id, r.room_name, b.start_time, b.end_time
+        FROM bookings b
+        JOIN laundry_Rooms r ON b.room_id = r.room_id
+        WHERE b.apartment_number = ?
+        ORDER BY b.start_time ASC
+    `).all(req.user.apartment_number);
+
     res.json(bookings);
 });
 

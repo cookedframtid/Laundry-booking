@@ -7,18 +7,18 @@ function hashPassword(password) {
 
 console.log("Seeding database with initial data...");
 
-// 1. Prepare initial users (apartment numbers and temporary passwords)
+// 1. Prepare initial users (with building_id included)
 const initialUsers = [
-    { apartment: "0000", password: "password", role: "admin" },
-    { apartment: "1001", password: "password", role: "resident" },
-    { apartment: "1002", password: "password", role: "resident" },
-    { apartment: "1003", password: "password", role: "resident" },
-    { apartment: "1004", password: "password", role: "resident" },
+    { apartment: "0000", password: "password", role: "admin", building_id: 1 },
+    { apartment: "1001", password: "password", role: "resident", building_id: 1 },
+    { apartment: "1002", password: "password", role: "resident", building_id: 1 },
+    { apartment: "2001", password: "password", role: "resident", building_id: 2 },
+    { apartment: "2002", password: "password", role: "resident", building_id: 2 },
 ];
 
 const insertUser = db.prepare(`
-    INSERT OR REPLACE INTO users (apartment_number, password_hash, role) 
-    VALUES (?, ?, ?)
+    INSERT OR REPLACE INTO users (apartment_number, password_hash, role, building_id) 
+    VALUES (?, ?, ?, ?)
 `);
 
 // 2. Prepare sample laundry rooms
@@ -38,11 +38,11 @@ for (const room of initialRooms) {
 }
 
 for (const user of initialUsers) {
-    insertUser.run(user.apartment, hashPassword(user.password), user.role);
+    insertUser.run(user.apartment, hashPassword(user.password), user.role, user.building_id);
 }
 
 console.log("Database seeded successfully!");
 console.log("\n--- Accounts Available for Testing ---");
 initialUsers.forEach(u => {
-    console.log(`Apartment: ${u.apartment} | Role: ${u.role.padEnd(8)} | Temporary Password: ${u.password}`);
+    console.log(`Apartment: ${u.apartment} | Role: ${u.role.padEnd(8)} | Bldg: ${u.building_id} | Temp Password: ${u.password}`);
 });

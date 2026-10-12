@@ -11,7 +11,8 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     apartment_number varchar(255) PRIMARY KEY,
     password_hash TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'resident'
+    role TEXT NOT NULL DEFAULT 'resident',
+    building_id INTEGER NOT NULL DEFAULT 1
   );
 
   CREATE TABLE IF NOT EXISTS laundry_Rooms (

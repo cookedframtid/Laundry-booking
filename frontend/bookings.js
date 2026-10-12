@@ -63,23 +63,30 @@ function findBooking(bookings, dateString, slotStart) {
 
 function getCellStatus(booking, past) {
     const mine = booking && booking.apartment_number === window.myApartment;
+    const isAdmin = window.userRole === "admin";
 
     if (booking && past) {
         return mine
-            ? { text: "My booking", className: "status-past-booked" }
-            : { text: "Unavailable", className: "status-past-booked" };
+            ? { text: "My booking", className: "status-past-booked", action: "none" }
+            : (isAdmin ? { text: `Apt ${booking.apartment_number}`, className: "status-past-booked", action: "none" }
+                       : { text: "Unavailable", className: "status-past-booked", action: "none" });
     }
     if (past) {
-        return { text: "Book", className: "status-past" };
+        return { text: "Book", className: "status-past", action: "none" };
     }
     if (!booking) {
-        return { text: "Book", className: "status-ready" };
+        return { text: "Book", className: "status-ready", action: "book" };
     }
     if (mine) {
-        return { text: "My booking", className: "status-mine" };
+        return { text: "My booking", className: "status-mine", action: "cancel-mine" };
     }
-    return { text: "Unavailable", className: "status-unavailable" };
+    if (isAdmin) {
+        // Show apartment number and allow admin to cancel
+        return { text: `Apt ${booking.apartment_number}`, className: "status-unavailable", action: "cancel-admin", apt: booking.apartment_number };
+    }
+    return { text: "Unavailable", className: "status-unavailable", action: "none" };
 }
+
 
 // ===== Building the HTML =====
 function buildHeaderRow(weekDates) {
@@ -94,20 +101,26 @@ function buildHeaderRow(weekDates) {
 }
 
 function addCellClickBehavior(cell, status, booking, day, slot) {
-    if (status.text === "Book") {
+    if (status.action === "book") {
         cell.style.cursor = "pointer";
-        cell.addEventListener("click", function () {
-            openBookingConfirm(day.dateString, slot);
-        });
-    } else if (status.text === "My booking") {
+        cell.addEventListener("click", () => openBookingConfirm(day.dateString, slot));
+    } else if (status.action === "cancel-mine") {
         cell.style.cursor = "pointer";
-        cell.addEventListener("click", function () {
+        cell.addEventListener("click", () => {
             if (confirm(`Cancel your booking for ${slot.label} on ${day.dateString}?`)) {
+                cancelBooking(booking.booking_id);
+            }
+        });
+    } else if (status.action === "cancel-admin") {
+        cell.style.cursor = "pointer";
+        cell.addEventListener("click", () => {
+            if (confirm(`ADMIN: Cancel booking for Apartment ${status.apt} on ${day.dateString}?`)) {
                 cancelBooking(booking.booking_id);
             }
         });
     }
 }
+
 
 function buildSlotRow(slot, weekDates, bookings) {
     const row = document.createElement("tr");
@@ -190,25 +203,52 @@ document.addEventListener("click", function (e) {
 async function loadCurrentUser() {
     try {
         const res = await fetch('http://localhost:5000/api/me', { credentials: "include" });
-
         if (!res.ok) {
             window.location.href = "index.html";
-            return false;               // ← tell the caller we're not logged in
+            return false;
         }
 
         const user = await res.json();
         window.myApartment = String(user.apartment_number);
+        window.userRole = user.role; // Save role globally
 
+        // Safely unhide the admin link only if it exists in the HTML
         if (user.role === "admin") {
-            document.getElementById("admin-link").classList.remove("hidden");
+            const adminLink = document.getElementById("admin-link");
+            if (adminLink) {
+                adminLink.classList.remove("hidden");
+            }
         }
         return true;
     } catch (err) {
-        alert("Could not reach the server.");
+        console.error("Profile load error:", err);
+        alert("An error occurred while loading your profile. Check the console for details.");
         return false;
     }
 }
 
+// --- NEW Dynamic Room Loading ---
+async function loadRooms() {
+    try {
+        // ADDED credentials: 'include'
+        const res = await fetch('http://localhost:5000/api/rooms', { credentials: 'include' });
+        const rooms = await res.json();
+        
+        const select = document.getElementById("room-select");
+        select.innerHTML = "";
+        
+        rooms.forEach(room => {
+            const opt = document.createElement("option");
+            opt.value = room.room_id;
+            opt.textContent = room.room_name;
+            select.appendChild(opt);
+        });
+        
+        if(rooms.length > 0) fetchBookings();
+    } catch (err) {
+        console.error("Failed to load rooms");
+    }
+}
 
 // ===== Booking confirmation popup =====
 let pendingBooking = null;
@@ -284,6 +324,8 @@ async function cancelBooking(bookingId) {
 // Only load bookings for the selected room
 async function fetchBookings() {
     const roomId = document.getElementById("room-select").value;
+    if (!roomId) return; // Prevent searching if no rooms exist
+    
     const res = await fetch(
         `http://localhost:5000/api/bookings/search?room_id=${roomId}`,
         { credentials: "include" }
@@ -291,7 +333,6 @@ async function fetchBookings() {
     const bookings = await res.json();
     renderGrid(bookings);
 }
-
 
 
 // make it so that the log out button logs the user out and redirects to the login page
@@ -356,5 +397,69 @@ document.getElementById("mybookings-close").addEventListener("click", function (
 document.getElementById("room-select").addEventListener("change", fetchBookings);
 
 // ===== Start =====
- loadCurrentUser().then(fetchBookings);
+loadCurrentUser().then(isLoggedIn => {
+    if(isLoggedIn) loadRooms();
+});
 
+// --- ADD ADMIN PANEL ---
+const adminDialog = document.getElementById("admin-dialog");
+
+document.getElementById("admin-link")?.addEventListener("click", async function (e) {
+    e.preventDefault();
+    menuDropdown.classList.add("hidden");
+    await renderAdminRooms();
+    adminDialog.showModal();
+});
+
+document.getElementById("admin-close")?.addEventListener("click", function () {
+    adminDialog.close();
+    loadRooms(); // Refresh the main dropdown in case rooms were added/removed
+});
+
+async function renderAdminRooms() {
+    const res = await fetch('http://localhost:5000/api/rooms', { credentials: 'include' });
+    const rooms = await res.json();
+    const list = document.getElementById("admin-rooms-list");
+    list.innerHTML = "";
+    
+    rooms.forEach(room => {
+        const div = document.createElement("div");
+        div.textContent = `${room.room_name} (Bldg: ${room.building_id})`;
+        
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.onclick = async () => {
+            if(confirm(`Delete ${room.room_name}? This will remove all associated bookings!`)) {
+                await fetch(`http://localhost:5000/api/rooms/${room.room_id}`, {
+                    method: 'DELETE', credentials: 'include'
+                });
+                renderAdminRooms(); // refresh list
+            }
+        };
+        div.appendChild(delBtn);
+        list.appendChild(div);
+    });
+}
+
+document.getElementById("add-room-btn")?.addEventListener("click", async function() {
+    const bId = document.getElementById("new-building-id").value;
+    const rName = document.getElementById("new-room-name").value;
+    
+    if(!bId || !rName) return alert("Please fill in both building ID and room name.");
+    
+    const res = await fetch('http://localhost:5000/api/rooms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ building_id: bId, room_name: rName })
+    });
+    
+    if(res.ok) {
+        document.getElementById("new-building-id").value = "";
+        document.getElementById("new-room-name").value = "";
+        renderAdminRooms();
+    } else {
+        const data = await res.json();
+        alert(data.error || "Could not add room");
+    }
+});
