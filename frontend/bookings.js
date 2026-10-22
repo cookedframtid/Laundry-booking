@@ -253,10 +253,29 @@ async function loadRooms() {
 // ===== Booking confirmation popup =====
 let pendingBooking = null;
 
-function openBookingConfirm(dateString, slot) {
+async function openBookingConfirm(dateString, slot) {
+    try {
+        // 1. Fetch the user's current bookings
+        const res = await fetch('http://localhost:5000/api/bookings/mine', { credentials: "include" });
+        const myBookings = await res.json();
+        
+        // 2. Check if any booking ends in the future
+        const now = new Date();
+        const hasActiveBooking = myBookings.some(booking => new Date(booking.end_time) > now);
+
+        // 3. Block booking if an active one exists (allow admins to bypass)
+        if (hasActiveBooking && window.userRole !== "admin") {
+            alert("You already have an active booking! Please wait until it finishes or cancel it to book a new time.");
+            return; // Stops the code here so the popup never opens
+        }
+    } catch (err) {
+        alert("Could not verify your current bookings. Please try again.");
+        return;
+    }
+
+    // 4. If no active bookings, show the confirmation popup as normal
     pendingBooking = { dateString: dateString, slot: slot };
-    document.getElementById("confirm-text").textContent =
-        `Book ${slot.label} on ${dateString}?`;
+    document.getElementById("confirm-text").textContent = `Book ${slot.label} on ${dateString}?`;
     document.getElementById("confirm-overlay").classList.remove("hidden");
 }
 
@@ -401,20 +420,7 @@ loadCurrentUser().then(isLoggedIn => {
     if(isLoggedIn) loadRooms();
 });
 
-// --- ADD ADMIN PANEL ---
-const adminDialog = document.getElementById("admin-dialog");
 
-document.getElementById("admin-link")?.addEventListener("click", async function (e) {
-    e.preventDefault();
-    menuDropdown.classList.add("hidden");
-    await renderAdminRooms();
-    adminDialog.showModal();
-});
-
-document.getElementById("admin-close")?.addEventListener("click", function () {
-    adminDialog.close();
-    loadRooms(); // Refresh the main dropdown in case rooms were added/removed
-});
 
 async function renderAdminRooms() {
     const res = await fetch('http://localhost:5000/api/rooms', { credentials: 'include' });
