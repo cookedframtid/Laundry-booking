@@ -25,7 +25,7 @@ const insertUser = db.prepare(`
 const initialRooms = [
     { building_id: 1, room_name: "Laundry Room A (Building 1)" },
     { building_id: 1, room_name: "Laundry Room B (Building 1)" },
-    { building_id: 2, room_name: "Laundry Room North (Building 2)" },
+    { building_id: 2, room_name: "Laundry Room A (Building 2)" },
 ];
 
 const insertRoom = db.prepare(`
